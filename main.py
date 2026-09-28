@@ -1,41 +1,27 @@
-def count_words(book_text):
-    words = book_text.split()
-    return len(words)
+import sys
+from stats import count_words, count_chars, chars_dict_to_sorted_list
 
-def count_chars(book_text):
-    lowered = book_text.lower()
-    char_counts = {}
-    for char in lowered:
-        if char not in char_counts:
-            char_counts[char] = 1
-        else:
-            char_counts[char] += 1
-    return char_counts
+def print_report(book, word_counts, sorted_chars):
+    print("============ BOOKBOT ============")
+    print(f"Analyzing book found at {book}...")
+    print("----------- Word Count ----------")
+    print(f"Found {word_counts} total words")
+    print("--------- Character Count -------")
 
-# A function that takes a dictionary and returns the value of the "num" key
-# This is how the `.sort()` method knows how to sort the list of dictionaries
-def sort_on(dict):
-    return dict["count"]
-
-def sorted_chars(char_counts):
-    alpha_chars = [{"char":char, "count":count} for char, count in char_counts.items() if char.isalpha()]
-    alpha_chars.sort(reverse=True,key=sort_on)
-    return alpha_chars
-
-def print_report(word_counts, sorted_chars, book_name):
-    print(f"--- Begin report of {book_name} ---")
-    print(f"There are {word_counts} words found in this book.\n")
-
-    for dict in sorted_chars:
-        print(f"The '{dict["char"]}' character was found {dict["count"]} times")
+    for tuple in sorted_chars:
+        print(f"{tuple[0]}: {tuple[1]}")
     
-    print("\n--- End report ---")
+    print("============= END ===============")
 
+if len(sys.argv) != 2:
+    print("Usage: python3 main.py <path_to_book>")
+    sys.exit(1)
 
-book = "books/frankenstein.txt"
+book = sys.argv[1]
 with open(book) as f:
     file_contents = f.read()
 
 word_counts = count_words(file_contents)
-sorted_chars = sorted_chars(count_chars(file_contents))
-print_report(word_counts, sorted_chars, book)
+char_counts = count_chars(file_contents)
+sorted_chars = chars_dict_to_sorted_list(char_counts)
+print_report(book, word_counts, sorted_chars)
